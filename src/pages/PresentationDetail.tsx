@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import TagPill from "@/components/TagPill";
 import { usePresentation, deletePresentation } from "@/hooks/usePresentations";
-import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "@/lib/utils";
 

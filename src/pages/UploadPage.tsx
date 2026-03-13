@@ -7,14 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/context/AuthContext";
 import { useAllTags } from "@/hooks/useTags";
 
 const TEAMS = ["Sales", "Product", "Marketing", "HR"];
 const LANGUAGES = ["FR", "EN", "ES"];
 
+// Placeholder user id used while auth is disabled
+const ANON_USER_ID = "00000000-0000-0000-0000-000000000000";
+
 export default function UploadPage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const { tags: allTags } = useAllTags();
 
@@ -58,7 +59,7 @@ export default function UploadPage() {
     if (!label) return;
     const { data, error } = await supabase
       .from("tags")
-      .insert({ label, created_by: user?.id ?? null })
+      .insert({ label, created_by: null })
       .select()
       .single();
     if (error) { setError(error.message); return; }
@@ -68,7 +69,7 @@ export default function UploadPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !title || !user) return;
+    if (!file || !title) return;
     setUploading(true);
     setError(null);
 
@@ -76,7 +77,7 @@ export default function UploadPage() {
       // 1. Upload file to Supabase Storage
       setProgress(20);
       const ext = file.name.split(".").pop();
-      const storagePath = `${user.id}/${Date.now()}.${ext}`;
+      const storagePath = `public/${Date.now()}.${ext}`;
       const { error: uploadErr } = await supabase.storage
         .from("presentations")
         .upload(storagePath, file, { upsert: false });
@@ -97,7 +98,7 @@ export default function UploadPage() {
         .insert({
           title,
           description: description || null,
-          uploaded_by: user.id,
+          uploaded_by: ANON_USER_ID,
           team: team || null,
           language: language || null,
           file_url: fileUrl,
