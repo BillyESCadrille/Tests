@@ -12,8 +12,6 @@ import { useAllTags } from "@/hooks/useTags";
 const TEAMS = ["Sales", "Product", "Marketing", "HR"];
 const LANGUAGES = ["FR", "EN", "ES"];
 
-// Placeholder user id used while auth is disabled
-const ANON_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -98,7 +96,7 @@ export default function UploadPage() {
         .insert({
           title,
           description: description || null,
-          uploaded_by: ANON_USER_ID,
+          uploaded_by: null,
           team: team || null,
           language: language || null,
           file_url: fileUrl,

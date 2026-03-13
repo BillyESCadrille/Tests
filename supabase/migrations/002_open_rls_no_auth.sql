@@ -3,6 +3,10 @@
 -- À exécuter dans le SQL Editor Supabase après 001_init.sql
 -- ─────────────────────────────────────────────────────────────────────────────
 
+-- Rendre uploaded_by nullable (pas de user en mode sans auth)
+alter table public.presentations
+  alter column uploaded_by drop not null;
+
 -- Supprimer les anciennes policies qui exigent auth.role() = 'authenticated'
 drop policy if exists "presentations: read authenticated" on public.presentations;
 drop policy if exists "presentations: insert own"         on public.presentations;
@@ -19,15 +23,6 @@ drop policy if exists "presentation_tags: read"           on public.presentation
 drop policy if exists "presentation_tags: write own"      on public.presentation_tags;
 
 drop policy if exists "slide_tags: read"                  on public.slide_tags;
-
--- Créer un utilisateur anonyme de substitution (pour uploaded_by)
-insert into public.users (id, email, name, role)
-values (
-  '00000000-0000-0000-0000-000000000000',
-  'anon@partoo.co',
-  'Anonyme',
-  'user'
-) on conflict (id) do nothing;
 
 -- Nouvelles policies ouvertes (tout le monde peut lire et écrire)
 -- ⚠️  À resserrer quand l'auth Google sera activée
